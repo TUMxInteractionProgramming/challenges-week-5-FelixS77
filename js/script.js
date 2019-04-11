@@ -4,6 +4,7 @@ console.log("App is alive");
 
 /** #7 Create global variable */
 var currentChannel;
+var currentTab = 1;
 
 /** #7 We simply initialize it with the channel selected by default - sevencontinents */
 currentChannel = sevencontinents;
@@ -63,6 +64,7 @@ function star() {
     // #7 toggle star also in list
     $('#channels li:contains(' + currentChannel.name + ') .fa').removeClass('fas far');
     $('#channels li:contains(' + currentChannel.name + ') .fa').addClass(currentChannel.starred ? 'fas' : 'far');
+    listChannels(currentTab);
 }
 
 /**
@@ -107,17 +109,22 @@ function sendMessage() {
 
     // #8 let's now use the real message #input
     var message = new Message($('#message').val());
-    console.log("New message:", message);
+    if(message.text.length!=0){
+        console.log("New message:", message);
 
-    // #8 convenient message append with jQuery:
-    $('#messages').append(createMessageElement(message));
+        // #8 convenient message append with jQuery:
+        $('#messages').append(createMessageElement(message));
 
-    // #8 messages will scroll to a certain point if we apply a certain height, in this case the overall scrollHeight of the messages-div that increases with every message;
-    // it would also scroll to the bottom when using a very high number (e.g. 1000000000);
-    $('#messages').scrollTop($('#messages').prop('scrollHeight'));
+        // #8 messages will scroll to a certain point if we apply a certain height, in this case the overall scrollHeight of the messages-div that increases with every message;
+        // it would also scroll to the bottom when using a very high number (e.g. 1000000000);
+        $('#messages').scrollTop($('#messages').prop('scrollHeight'));
 
-    // #8 clear the message input
-    $('#message').val('');
+        // #8 clear the message input
+        $('#message').val('');
+        currentChannel.messages.push(message);
+        currentChannel.messageCount = currentChannel.messageCount + 1;
+        listChannels(currentTab);
+    }
 }
 
 /**
@@ -140,22 +147,47 @@ function createMessageElement(messageObject) {
         messageObject.createdOn.toLocaleString() +
         '<em>' + expiresIn+ ' min. left</em></h3>' +
         '<p>' + messageObject.text + '</p>' +
-        '<button>+5 min.</button>' +
+        '<button class="accent">+5 min.</button>' +
         '</div>';
 }
 
 
-function listChannels() {
+function listChannels(criterium) {
     // #8 channel onload
     //$('#channels ul').append("<li>New Channel</li>")
+    $('li').remove();
 
     // #8 five new channels
-    $('#channels ul').append(createChannelElement(yummy));
-    $('#channels ul').append(createChannelElement(sevencontinents));
-    $('#channels ul').append(createChannelElement(killerapp));
-    $('#channels ul').append(createChannelElement(firstpersononmars));
-    $('#channels ul').append(createChannelElement(octoberfest));
+
+    
+    if(criterium == 1){
+        currentTab = 1;
+        channels.sort(compareNew);
+    } else if(criterium == 2){
+        currentTab = 2;
+        channels.sort(compareTrending);
+    } else if(criterium == 3){
+        currentTab = 3;
+        channels.sort(compareFavorites);
+    }
+
+
+    for(i=0;i<channels.length;i++){
+        $('#channels ul').append(createChannelElement(channels[i]));
+    }
+
+
+    $('#channels li:contains(' + currentChannel.name + ')').addClass('selected');
+
 }
+
+function listEmojis(){
+    $('#emojis').html(require('emojis-list'));
+}
+
+
+
+
 
 /**
  * #8 This function makes a new jQuery #channel <li> element out of a given object
@@ -174,7 +206,7 @@ function createChannelElement(channelObject) {
      */
 
     // create a channel
-    var channel = $('<li>').text(channelObject.name);
+    var channel = $('<li>').text(channelObject.name).attr('onClick','switchChannel('+channelObject.varName + ')');
 
     // create and append channel meta
     var meta = $('<span>').addClass('channel-meta').appendTo(channel);
@@ -192,4 +224,8 @@ function createChannelElement(channelObject) {
 
     // return the complete channel
     return channel;
+}
+
+function fabAction(){
+    
 }
