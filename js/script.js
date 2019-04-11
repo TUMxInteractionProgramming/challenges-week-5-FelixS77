@@ -22,6 +22,7 @@ var currentLocation = {
  * @param channelObject
  */
 function switchChannel(channelObject) {
+    abort();
     //Log the channel switch
     console.log("Tuning in to channel", channelObject);
 
@@ -101,6 +102,17 @@ function Message(text) {
     this.text = text;
     // own message
     this.own = true;
+}
+
+function Channel(name){
+    this.name = name;
+    this.varname = name;
+    this.createdOn = new Date(Date.now());
+    this.createdBy = "minus.plus.yummy";
+    this.expiresIn = 15;
+    this.messageCount = 0;
+    this.messages = [];
+    this.starred = false;
 }
 
 function sendMessage() {
@@ -227,5 +239,31 @@ function createChannelElement(channelObject) {
 }
 
 function fabAction(){
-    
+    $('#messages div').remove();
+    $('#chat_title').css('display','none');
+    $('#new_channel').css('display','flex');
+    $('#creating_channel_button').css('display','inline');
+    $('#sending_button').css('display','none');
+}
+
+function abort(){
+    $('#chat_title').css('display','block');
+    $('#new_channel').css('display','none');
+    $('#creating_channel_button').css('display','none');
+    $('#sending_button').css('display','inline');
+}
+
+function createNewChannel(){
+    var channelname = $('#newChannelName').val();
+    if(channelname.length!=0 && channelname.charAt(0) == '#'){
+        var channel = new Channel(channelname);
+        channels.push(channel);
+        currentChannel = channel;
+        abort();
+        listChannels(currentTab);
+        switchChannel(channel);
+        $('#newChannelName').val('');
+        console.log(channel);
+    }
+
 }

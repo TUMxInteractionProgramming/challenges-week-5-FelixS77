@@ -112,6 +112,32 @@ h1 i {
     font-size:24px;
 }
 
+#chat_title{
+    display: block;
+}
+#new_channel{
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+}
+#new_channel input{
+    width: 100%;
+    font-size: 24px;
+}
+#new_channel button{
+    display:flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+#new_channel button i{
+    position: initial;
+    margin-right: 5px;
+    font-size: 16px;
+}
+#creating_channel_button{
+    display: none;
+}
+
 /* CHANNELS LIST */
 
 ul {
